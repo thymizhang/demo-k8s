@@ -11,7 +11,7 @@
 
     <artifactId>k8s-service-user</artifactId>
     <groupId>com.k8s</groupId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <dependencies>
         <dependency>
