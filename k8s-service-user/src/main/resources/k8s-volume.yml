@@ -1,0 +1,45 @@
+# Deployments封装了ReplicaSet, 实现了滚动发布
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: registry.cn-shenzhen.aliyuncs.com/ylwq/nginx:1.19.2-alpine
+          imagePullPolicy: IfNotPresent #如果存在本地镜像, 则不从远程仓库拉取
+          volumeMounts:
+            - name: nginx-volume
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: nginx-volume
+          hostPath:
+            path: /E/k8s/volume/html
+            type: DirectoryOrCreate #目录不存在则自动创建
+
+---
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30000
+  type: NodePort

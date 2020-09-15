@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-pv
+spec:
+  storageClassName: standard #与pvc中的storageClassName一致即可匹配
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /E/k8s/volume/html
+    type: DirectoryOrCreate

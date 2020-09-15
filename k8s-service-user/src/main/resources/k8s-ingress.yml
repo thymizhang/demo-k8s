@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: k8s-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules: #路由规则
+    - host: user.gceasy.cc #微服务必须通过域名的方式访问, 名称任意, 需要在hosts中配置, 指向127.0.0.1
+      http:
+        paths:
+          - path: /user #可以是正则表达式
+            backend:
+              serviceName: user #微服务对应的服务名
+              servicePort: 7000
+          - path: /company #可以是正则表达式
+            backend:
+              serviceName: company #微服务对应的服务名
+              servicePort: 7001
+---
+#官方案例
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: simple-fanout-example
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: foo.bar.com
+      http:
+        paths:
+          - path: /foo
+            backend:
+              serviceName: service1
+              servicePort: 4200
+          - path: /bar
+            backend:
+              serviceName: service2
+              servicePort: 8080

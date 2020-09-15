@@ -1,0 +1,88 @@
+# skywalking-oap
+apiVersion: v1
+kind: Service
+metadata:
+  name: oap
+  namespace: skywalking
+  labels:
+    service: oap
+spec:
+  ports:
+    - port: 11800
+      name: grpc
+    - port: 12800
+      name: rest
+  selector:
+    app: oap
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oap
+  namespace: skywalking
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oap
+      release: skywalking
+  template:
+    metadata:
+      labels:
+        app: oap
+        release: skywalking
+    spec:
+      containers:
+        - name: oap
+          image: apache/skywalking-oap-server:8.1.0-es7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 11800
+              name: grpc
+            - containerPort: 12800
+              name: rest
+# skywalking-ui
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ui
+  namespace: skywalking
+  labels:
+    service: ui
+spec:
+  ports:
+    - port: 8080
+      name: page
+      nodePort: 31234
+  type: NodePort
+  selector:
+    app: ui
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-deployment
+  namespace: skywalking
+  labels:
+    app: ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui
+  template:
+    metadata:
+      labels:
+        app: ui
+    spec:
+      containers:
+        - name: ui
+          image: apache/skywalking-ui:8.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: page
+          env:
+            - name: SW_OAP_ADDRESS
+              value: oap:12800

@@ -1,0 +1,24 @@
+prometheus:
+  additionalServiceMonitors:
+    - name: "k8s-company"
+      selector:
+        matchLabels:
+          app: company #这里对应company的Service中的metadata.labels
+      namespaceSelector:
+        matchNames:
+          - default
+      endpoints:
+        - port: http #这里对应company的Service中的spec.ports.name
+          path: /actuator/prometheus
+          scheme: http
+    - name: "k8s-user"
+      selector:
+        matchLabels:
+          app: user #这里对应user的Service中的metadata.labels
+      namespaceSelector:
+        matchNames:
+          - default
+      endpoints:
+        - port: http #这里对应user的Service中的spec.ports.name
+          path: /actuator/prometheus
+          scheme: http

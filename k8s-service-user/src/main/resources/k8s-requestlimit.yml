@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: registry.cn-shenzhen.aliyuncs.com/ylwq/nginx:1.19.2-alpine
+          resources:
+            requests: #请求资源下限
+              cpu: "100m"
+              memory: "128Mi"
+            limits:  #资源上限
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+    group: ylwq
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80  #后台pod的端口, 可以不填, 默认就是port的值
+      nodePort: 30000 #实际对外暴露的端口
+  selector:
+    app: nginx #路由规则: 匹配pod中的labels标签
+  type: NodePort

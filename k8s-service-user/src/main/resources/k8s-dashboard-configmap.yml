@@ -1,0 +1,12 @@
+appVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-msa-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  user-msa-dashboard.json: |
+    {
+
+    }

@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: company
+  labels:
+    app: company
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: company
+  template:
+    metadata:
+      labels:
+        app: company
+    spec:
+      initContainers: #新增
+        - name: sw-agent-sidecar
+          image: k8s/skywalking-agent-sidecar:8.1.0
+          imagePullPolicy: IfNotPresent
+          command: ["sh"]
+          args:
+            [
+              "-c",
+              "mkdir -p /skywalking/agent && cp -r /usr/skywalking/agent/* /skywalking/agent",
+            ]
+          volumeMounts:
+            - mountPath: /skywalking/agent
+              name: sw-agent
+      containers:
+        - name: company
+          image: k8s-service-company:1.0.0
+          imagePullPolicy: IfNotPresent
+          readinessProbe: #就绪探针
+            httpGet:
+              path: /actuator/health #需要依赖spring-boot-starter-actuator
+              port: 7001 #k8s内部端口
+            initialDelaySeconds: 10 #等待3秒开始检查
+          livenessProbe: #存活探针
+            tcpSocket:
+              port: 7001
+            initialDelaySeconds: 30 #等待30秒开始检查
+            periodSeconds: 60 #每60秒检查一次
+          resources:
+            requests: #请求资源下限
+              cpu: "100m"
+              memory: "128Mi"
+            limits:  #资源上限, 大于等于requests
+              memory: "512Mi"
+          env:
+            - name: JAVA_OPTS #修改, 加入agent, 让注入的埋点生效
+              value: "-javaagent:/user/skywalking/agent/skywalking-agent.jar -XX:MaxRAMPercentage=50.0"
+            - name: SW_AGENT_NAME #新增, 给skywalking-agent.jar, 后面使用dashboard时可以看到该服务名
+              value: k8s-service-company
+            - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES #新增, 产生的trace发送的目标地址
+              value: oap.skywalking:11800 #这里是跨namespace的访问, 需要使用[service].[namespace]:[port]的方式来访问
+            - name: SERVER_PORT
+              value: "7001"
+          volumeMounts: #新增
+            - mountPath: /user/skywalking/agent
+              name: sw-agent
+      volumes: #新增
+        - name: sw-agent
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: company
+  labels:
+    app: company
+    group: ylwq
+spec:
+  ports:
+    - name: http
+      port: 7001
+      targetPort: 7001  #pod的端口, 可以不填, 默认就是port的值
+      nodePort: 30001 #对k8s集群暴露的端口
+  selector:
+    app: company #路由规则: 匹配pod中的labels标签
+  type: NodePort
