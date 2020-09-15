@@ -30,6 +30,7 @@
         <docker.image.prefix>thymizhang</docker.image.prefix>
         <docker.image.exposed.port>8080</docker.image.exposed.port>
         <dockerfile.plugin.version>1.4.13</dockerfile.plugin.version>
+        <docker.image.tag>${project.version}</docker.image.tag>
     </properties>
 
     <dependencyManagement>
@@ -140,7 +141,7 @@
                         <!-- 如果是dockerhub镜像仓库,是你的账号/仓库名 -->
                         <repository>${docker.image.prefix}/${project.artifactId}</repository>
                         <!--<contextDirectory>${basedir}</contextDirectory>-->
-                        <tag>${project.version}</tag>
+                        <tag>${docker.image.tag}</tag>
                         <!-- 注意在本地.m2/settings.xml中设置dockerhub账号和密码,https://zhuanlan.zhihu.com/p/90122357 -->
                         <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
                         <buildArgs>
