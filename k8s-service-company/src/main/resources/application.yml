@@ -1,0 +1,18 @@
+server:
+  port: ${port:8090}
+spring:
+  application:
+    name: service-company
+  cloud:
+    kubernetes:
+      discovery:
+        enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        #include: health,info,prometheus
+        include: health,info,prometheus # 暴露/actuator/prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name} # 暴露的数据中添加application label
