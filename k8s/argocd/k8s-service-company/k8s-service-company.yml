@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: company
+  labels:
+    app: company
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: company
+  template:
+    metadata:
+      labels:
+        app: company
+    spec:
+      containers:
+        - name: company
+          image: k8s-service-company:1.0.0
+          imagePullPolicy: IfNotPresent
+          readinessProbe: #就绪探针
+            httpGet:
+              path: /actuator/health #需要依赖spring-boot-starter-actuator
+              port: 8080 #k8s内部端口
+            initialDelaySeconds: 10 #等待10秒开始检查
+          livenessProbe: #存活探针
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30 #等待30秒开始检查
+            periodSeconds: 60 #每60秒检查一次
+          resources:
+            requests: #请求资源下限
+              cpu: "100m"
+              memory: "128Mi"
+            limits:  #资源上限, 大于等于requests
+              memory: "512Mi"
+          env:
+            - name: JAVA_OPTS
+              value: "-XX:MaxRAMPercentage=50.0"
+            - name: SERVER_PORT
+              value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: company
+  labels:
+    app: company
+    group: ylwq
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080  #pod的端口, 可以不填, 默认就是port的值
+  selector:
+    app: company #路由规则: 匹配pod中的labels标签
+  type: NodePort
