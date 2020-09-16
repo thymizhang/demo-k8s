@@ -16,4 +16,4 @@ ENTRYPOINT exec java -Dport=${EXPOSED_PORT} $JAVA_OPTS -jar application.jar
 # push镜像到远程仓库
 # mvn dockerfile:push
 
-# test
+# for circleci
