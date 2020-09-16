@@ -57,6 +57,12 @@
                 <artifactId>micrometer-registry-prometheus</artifactId>
                 <version>1.5.4</version>
             </dependency>
+            <!-- Java工具包类库，对文件、流、加密解密、转码、正则、线程、XML等JDK方法进行封装，组成各种Util工具类 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.4.2</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -87,6 +93,11 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
         </dependency>
     </dependencies>
 
