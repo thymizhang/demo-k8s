@@ -1,13 +1,13 @@
 package com.k8s.service.company;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.management.ManagementFactory;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
 
 /**
  * @Author thymi
@@ -85,5 +86,11 @@ public class CompanyApplication {
     @GetMapping("/name")
     public String getName(){
         return "ylwq company.";
+    }
+
+    @GetMapping("/now")
+    public String getTime(){
+        LocalDateTime now = LocalDateTimeUtil.now();
+        return LocalDateTimeUtil.format(now, DatePattern.NORM_DATETIME_PATTERN);
     }
 }
