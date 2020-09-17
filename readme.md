@@ -11,6 +11,8 @@
   - 开发工具: Idea 2020.1
   - java环境: JDK11
   - k8s环境: minikube 1.12.3
+  - 持续集成: CircleCI(对Github中开源的项目免费, 对私有项目收费)
+  - 持续交付: ArgoCD
 
 - Terminal使用说明
     - idea打开时需要以管理员身份运行, 这样才能运行powershell

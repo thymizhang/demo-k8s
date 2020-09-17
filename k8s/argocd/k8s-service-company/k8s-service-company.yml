@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: company
-          image: k8s-service-company:1.0.0
+          image: thymizhang/k8s-service-company:Build-23-CI
           imagePullPolicy: IfNotPresent
           readinessProbe: #就绪探针
             httpGet:
