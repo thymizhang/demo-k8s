@@ -1,5 +1,6 @@
 package com.k8s.service.user;
 
+import cn.hutool.core.convert.Convert;
 import com.k8s.service.user.feign.CompanyFeign;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class UserApplication {
 
     /**
      * 加入该段内容, prometheus才能获取到数据
+     *
      * @param applicationName
      * @return
      */
@@ -109,15 +111,15 @@ public class UserApplication {
     }
 
     @GetMapping("/{user}/{pwd}")
-    public String userAuth(@PathVariable("user") String user,@PathVariable("pwd") String pwd){
-        Map<String,String> users = new HashMap<>();
-        users.put("thymi","111111");
-        users.put("bill","111111");
-        users.put("mask","111111");
-        users.put("jack","111111");
+    public String userAuth(@PathVariable("user") String user, @PathVariable("pwd") String pwd) {
+        Map<String, String> users = new HashMap<>();
+        users.put("thymi", "111111");
+        users.put("bill", "111111");
+        users.put("mask", "111111");
+        users.put("jack", "111111");
 
         String userPassword = users.get(user);
-        if(userPassword.equals(pwd)){
+        if (userPassword.equals(pwd)) {
             return user + " login success.";
         }
 
@@ -135,9 +137,26 @@ public class UserApplication {
         return discoveryClient.getInstances(name);
     }
 
+    /**
+     * 获取公司名
+     *
+     * @return
+     */
     @GetMapping("/company")
     public String getCompany() {
         log.info(">>> 调用company接口 <<<");
         return companyFeign.getCompanyName();
+    }
+
+    /**
+     * 获取大写金额
+     *
+     * @return
+     */
+    @GetMapping("/money")
+    public String getMoney() {
+        double a = 67556.32;
+        String digitUppercase = Convert.digitToChinese(a);
+        return digitUppercase;
     }
 }
